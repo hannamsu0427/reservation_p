@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Reservation">
+
+	<typeAlias alias="Reservation" type="com.han.vo.ReservationVO" />
+
+	<resultMap id="MapForReservationList" class="Reservation">
+		<result property="rnum" column="RNUM2" />
+		<result property="seq" column="SEQ" />
+		<result property="korNm" column="KOR_NM" />
+		<result property="phone" column="PHONE" />
+		<result property="dormCount" column="DORM_COUNT" />
+		<result property="powerYn" column="POWER_YN" />
+		<result property="facilityCd" column="FACILITY_CD" />
+		<result property="adultCount" column="ADULT_COUNT" />
+		<result property="childCount" column="CHILD_COUNT" />
+		<result property="adultAddCount" column="ADULT_ADD_COUNT" />
+		<result property="childAddCount" column="CHILD_ADD_COUNT" /> 
+		<result property="rsDateFrom" column="RS_DATE_FROM" />
+		<result property="rsDateTo" column="RS_DATE_TO" />
+		<result property="regDate" column="REG_DATE" />
+		<result property="regIp" column="REG_IP" />
+		<result property="modDate" column="MOD_DATE" />
+		<result property="payDate" column="PAY_DATE" />
+		<result property="payName" column="PAY_NAME" />
+		<result property="instaId" column="INSTA_ID" />
+		<result property="cancleYn" column="CANCLE_YN" />
+		<result property="cancleDate" column="CANCLE_DATE" />
+		<result property="confirmYn" column="CONFIRM_YN" />
+	</resultMap>
+	
+	<resultMap id="MapForReservationData" class="Reservation">
+		<result property="seq" column="SEQ" />
+		<result property="korNm" column="KOR_NM" />
+		<result property="phone" column="PHONE" />
+		<result property="dormCount" column="DORM_COUNT" />
+		<result property="powerYn" column="POWER_YN" />
+		<result property="facilityCd" column="FACILITY_CD" />
+		<result property="adultCount" column="ADULT_COUNT" />
+		<result property="childCount" column="CHILD_COUNT" />
+		<result property="adultAddCount" column="ADULT_ADD_COUNT" />
+		<result property="childAddCount" column="CHILD_ADD_COUNT" />
+		<result property="rsDateFrom" column="RS_DATE_FROM" />
+		<result property="rsDateTo" column="RS_DATE_TO" />
+		<result property="regDate" column="REG_DATE" />
+		<result property="regIp" column="REG_IP" />
+		<result property="modDate" column="MOD_DATE" />
+		<result property="payDate" column="PAY_DATE" />
+		<result property="payName" column="PAY_NAME" />
+		<result property="instaId" column="INSTA_ID" />
+		<result property="cancleYn" column="CANCLE_YN" />
+		<result property="cancleDate" column="CANCLE_DATE" />
+		<result property="confirmYn" column="CONFIRM_YN" />
+	</resultMap>
+	
+	<select id="totalCount" resultClass="int">
+		SELECT COUNT(*) 
+		FROM JS_RESERVATION 
+		WHERE 1=1
+		<isNotEmpty prepend="AND" property="phone">
+		PHONE LIKE CONCAT('%',#searchValue#,'%')
+		</isNotEmpty>
+	</select>
+	
+	<select id="pageCount" resultClass="int">
+		SELECT COUNT(*) 
+		FROM JS_RESERVATION 
+		WHERE 1=1		
+		<isNotEmpty prepend="AND" property="searchValue">
+		(
+		KOR_NM LIKE CONCAT('%',#searchValue#,'%')
+		OR
+		PHONE LIKE CONCAT('%',#searchValue#,'%')
+		)
+		</isNotEmpty>
+	</select>
+	
+	<insert id="saveProcReservationData" >
+		INSERT INTO JS_RESERVATION (
+			KOR_NM,
+			PHONE,
+			DORM_COUNT,
+			POWER_YN,
+			FACILITY_CD,
+			ADULT_COUNT,
+			CHILD_COUNT,
+			ADULT_ADD_COUNT,
+			CHILD_ADD_COUNT,
+			RS_DATE_FROM,
+			RS_DATE_TO,
+			REG_DATE,
+			REG_IP,
+			MOD_DATE,
+			PAY_DATE,
+			PAY_NAME,
+			INSTA_ID,
+			CANCLE_YN,
+			CANCLE_DATE,
+			CONFIRM_YN
+		)VALUES(
+			#korNm#,
+			#phone#,
+			#dormCount#,
+			#powerYn#,
+			#facilityCd#,
+			#adultCount#,
+			#childCount#,
+			#adultAddCount#,
+			#childAddCount#,
+			#rsDateFrom#,
+			#rsDateTo#,
+			NOW(),
+			#regIp#,
+			#modDate#,
+			#payDate#,
+			#payName#,
+			#instaId#,
+			#cancleYn#,
+			#cancleDate#,
+			#confirmYn#		
+		)
+		<selectKey keyProperty="seq" resultClass="int" type="post">
+			SELECT LAST_INSERT_ID() as seq
+		</selectKey>
+	</insert>
+	
+	<update id="updateProcReservationData">
+		UPDATE JS_RESERVATION
+		SET
+			SEQ=#seq#,
+			KOR_NM=#korNm#,
+			PHONE=#phone#,
+			DORM_COUNT=#dormCount#,
+			POWER_YN=#powerYn#,
+			FACILITY_CD=#facilityCd#,
+			ADULT_COUNT=#adultCount#,
+			CHILD_COUNT=#childCount#,
+			ADULT_ADD_COUNT=#adultAddCount#,
+			CHILD_ADD_COUNT=#childAddCount#,
+			RS_DATE_FROM=#rsDateFrom#,
+			RS_DATE_TO=#rsDateTo#,
+			MOD_DATE=#modDate#,
+			PAY_DATE=#payDate#,
+			PAY_NAME=#payName#,
+			INSTA_ID=#instaId#
+		
+		WHERE SEQ = #seq#
+	</update>
+	
+	<select id="selectReservationList" resultMap="MapForReservationList">
+	SELECT C.*FROM ( 			
+		SELECT @ROWNUM2:=@ROWNUM2+1 AS RNUM2, B.* FROM( 				
+			SELECT @ROWNUM:=@ROWNUM+1 AS RNUM, A.* FROM( 
+				SELECT
+					SEQ,
+					KOR_NM,
+					PHONE,
+					DORM_COUNT,
+					POWER_YN,
+					FACILITY_CD,
+					ADULT_COUNT,
+					CHILD_COUNT,
+					ADULT_ADD_COUNT,
+					CHILD_ADD_COUNT,
+					RS_DATE_FROM,
+					RS_DATE_TO,
+					REG_DATE,
+					REG_IP,
+					MOD_DATE,
+					PAY_DATE,
+					PAY_NAME,
+					INSTA_ID,
+					CANCLE_YN,
+					CANCLE_DATE,
+					CONFIRM_YN
+				FROM JS_RESERVATION
+				WHERE 1=1
+					<isNotEmpty property="searchValue" prepend="AND">
+					(
+						name LIKE CONCAT('%',#searchValue#,'%')
+						OR
+						phone3 LIKE CONCAT('%',#searchValue#,'%')
+					)
+					</isNotEmpty>
+				) A, (SELECT @ROWNUM := 0) TMP 			
+			) B, (SELECT @ROWNUM2 := 0) TMP 		
+		)C 
+		WHERE 1=1
+		<isNotEmpty prepend="AND" property="startNum">
+			RNUM2 BETWEEN #startNum# AND #endNum#
+		</isNotEmpty>
+		ORDER BY RNUM2
+	</select>
+	
+	<select id="selectReservationData" resultMap="MapForReservationData">
+		SELECT
+			SEQ,
+			KOR_NM,
+			PHONE,
+			DORM_COUNT,
+			POWER_YN,
+			FACILITY_CD,
+			ADULT_COUNT,
+			CHILD_COUNT,
+			ADULT_ADD_COUNT,
+			CHILD_ADD_COUNT,
+			RS_DATE_FROM,
+			RS_DATE_TO,
+			REG_DATE,
+			REG_IP,
+			MOD_DATE,
+			PAY_DATE,
+			PAY_NAME,
+			INSTA_ID,
+			CANCLE_YN,
+			CANCLE_DATE,
+			CONFIRM_YN
+		FROM JS_RESERVATION
+		WHERE SEQ = #seq#
+	</select>
+	
+	<delete id="deleteReservationData">
+		DELETE FROM JS_RESERVATION
+		WHERE SEQ = #seq#
+	</delete>
+</sqlMap>
