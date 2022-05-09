@@ -75,6 +75,8 @@ public class CmsController {
 		params.put("searchBy", searchBy);
 		params.put("searchValue", searchValue);
 		
+		System.out.println("1111");
+		
 		//페이징 처리
 		Integer count = ReservationDao.selectPageCount(params);		
 		Map<String, Object> pageMap = PageUtil.pageMap(count, pageNum, "20");
